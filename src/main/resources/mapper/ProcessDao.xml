@@ -1,0 +1,15 @@
+<?xml version="1.0" encoding="UTF-8" ?>
+<!DOCTYPE mapper PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN" "http://mybatis.org/dtd/mybatis-3-mapper.dtd" >
+<mapper namespace="com.wiseq.cn.dao.ProcessDao">
+    <select id="findProcess" resultType="com.wiseq.cn.entity.FlowProcess">
+        SELECT ID_ id,NAME_ name,KEY_ 'key',VERSION_ version,SUSPENSION_STATE_ 'status'
+        FROM act_re_procdef
+    </select>
+
+    <select id="findTaskByUser" resultType="com.wiseq.cn.entity.FlowTask">
+        SELECT ID_ id,NAME_ name,EXECUTION_ID_ executionId,
+                CREATE_TIME_ createTime,SUSPENSION_STATE_ 'status', FORM_KEY_ formKey
+        FROM act_ru_task
+        WHERE ASSIGNEE_ = #{assignee}
+    </select>
+</mapper>

@@ -1,0 +1,67 @@
+<!DOCTYPE html>                                                                                                  
+<html lang="en">                                                                                                 
+<head>                                                                                                           
+    <meta charset="UTF-8">                                                                                       
+    <title>Title</title>	
+	<style>
+        table,table tr th, table tr td { border:1px solid #0094ff; }
+        table { min-height: 30px; line-height: 30px; border-collapse: collapse; padding:2px; width:70%;}   
+    </style>
+	<script src="jquery-1.8.3.js" type="text/javascript"></script>
+	<script type="text/javascript">
+        $(function(){
+            $.get("../flow/findProcess",function(result){
+                $.each(result.data,function(idx,obj){
+                    var newRow = "<tr style=\"text-align:center;\">" +
+                        "<td>" + obj.id + "</td>" +
+                        "<td>" + obj.name + "</td>" +
+                        "<td>" + obj.key + "</td>" +
+                        "<td>" + obj.version + "</td>" +
+                        "<td>" + obj.deploymentId + "</td>" +
+                        "<td>正常</td>" +
+                        "<td><input type=\"button\" onclick=\"formSubmit('" + obj.key + "','" + obj.id + "')\" value=\"发起流程\"></td>" +
+                        "</tr>";
+                    $("#table3 tr:last").after(newRow);
+                });
+            });
+        });
+
+		function formSubmit(key,id){
+			$.ajax({
+                type:"GET",  //请求方式
+                url:"../flow/findStartForm",  //请求路径：页面/方法名字
+                data: {processId:id},     //参数
+                contentType:"application/json; charset=utf-8",
+                success:function(msg){  //成功
+                    if(msg.data != null && msg.data != ""){
+                        window.location.href = msg.data + '.html?process=' + key;
+					}else{
+					   $.post("../flow/start",{processKey:key},function(){
+                           window.location.href = 'tasks.html';
+					   });
+					}
+                },
+                error:function(obj, msg){
+                    //异常
+                    alert(msg.message);
+                }               
+            });
+		}
+	</script>
+</head>                                                                                                          
+<body>                                                                                                           
+	<table id="table3">
+		<thead>
+			<tr>
+				<th>流程ID</th>
+				<th>名称</th>
+				<th>KEY</th>
+				<th>版本号</th>
+				<th>部署ID</th>
+				<th>状态</th>
+				<th>操作</th>
+			</tr>
+		</thead>
+	</table>
+</body>                                                                                                          
+</html>                                                                                                          

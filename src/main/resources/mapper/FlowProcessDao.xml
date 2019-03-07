@@ -1,0 +1,64 @@
+<?xml version="1.0" encoding="UTF-8" ?>
+<!DOCTYPE mapper PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN" "http://mybatis.org/dtd/mybatis-3-mapper.dtd" >
+<mapper namespace="com.wiseq.cn.dao.FlowProcessDao">
+    <select id="findProcess" resultType="com.wiseq.cn.entity.FlowProcess">
+        SELECT ID_ id,NAME_ name,KEY_ 'key',VERSION_ version,DEPLOYMENT_ID_ deploymentId,SUSPENSION_STATE_ 'status'
+        FROM act_re_procdef
+    </select>
+
+    <select id="findTaskByUser" resultType="com.wiseq.cn.entity.FlowTask">
+        SELECT ID_ id,NAME_ name,EXECUTION_ID_ executionId,
+                CREATE_TIME_ createTime,SUSPENSION_STATE_ 'status', FORM_KEY_ formKey
+        FROM act_ru_task
+        WHERE ASSIGNEE_ = #{assignee}
+    </select>
+
+    <select id="findByUserName" resultType="java.lang.String">
+        SELECT id FROM sys_user WHERE username = #{userName}
+    </select>
+
+    <select id="findRunning" resultType="java.util.LinkedHashMap">
+        SELECT t.id_ taskId,t.execution_id_ executionId,p.name_ flowName,t.name_ currentNode,t.assignee_ transactor,t.create_time_ createTime
+        FROM act_ru_task t,act_re_procdef p
+        WHERE t.proc_def_id_ = p.id_ AND PROC_DEF_ID_ = #{processId}
+    </select>
+
+    <select id="historyTasks" resultType="java.util.LinkedHashMap">
+        select taskId,processId,flowName,taskName,startTime,IFNULL(endTime,'--') endTime,IFNULL(deleteReson,'') deleteReson,
+			concat(case tday when 0 then '' else concat(tday,'天') end,
+						 case thour when 0 then '' else concat(thour-(tday*24),'时') end,
+						 case tminute when 0 then '' else concat(tminute-(thour*60),'分') end,
+						 case tsecond when 0 then '' else concat(tsecond-(tminute*60),'秒') end
+			) duration,
+			case deleteReson when 'completed' then '1' when deleteReson is null then '2' else '0' end status
+        from (
+            select t.id_ taskId,t.proc_def_id_ processId,p.name_ flowName,t.name_ taskName,t.start_time_ startTime,t.end_time_ endTime,delete_reason_ deleteReson,
+                        TimeStampDiff(DAY,t.start_time_,IFNULL(t.end_time_,now())) tday,TimeStampDiff(HOUR,t.start_time_,IFNULL(t.end_time_,now())) thour,
+                        TimeStampDiff(MINUTE,t.start_time_,IFNULL(t.end_time_,now())) tminute,TimeStampDiff(SECOND,t.start_time_,IFNULL(t.end_time_,now())) tsecond
+            from act_hi_taskinst t,act_re_procdef p
+            where t.proc_def_id_ = p.id_ and t.end_time_ is not null and assignee_ = #{assignee}
+        ) temp
+        order by endTime
+    </select>
+
+    <select id="findHistoryNodeId" resultType="java.lang.String">
+        select id_ from ACT_HI_ACTINST where task_id_ = #{taskId}
+    </select>
+    <select id="findTaskIdFromActinstById" resultType="java.lang.String">
+        select task_id_ from ACT_HI_ACTINST where id_ = #{id}
+    </select>
+    <select id="findHisActiveTask" resultType="java.util.LinkedHashMap">
+        SELECT * FROM ACT_HI_ACTINST WHERE TASK_ID_ = #{taskId} AND END_TIME_ IS NULL
+    </select>
+
+
+
+    <update id="updateHisTask">
+        UPDATE ACT_HI_ACTINST SET END_TIME_ = #{endTime},DURATION_ = #{duration} WHERE ID_ = #{id}
+    </update>
+
+
+    <delete id="deleteHistoryActivitie">
+        delete from ACT_HI_ACTINST where id_ = #{id}
+    </delete>
+</mapper>

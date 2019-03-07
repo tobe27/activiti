@@ -1,0 +1,16 @@
+<?xml version="1.0" encoding="UTF-8" ?>
+<!DOCTYPE mapper PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN" "http://mybatis.org/dtd/mybatis-3-mapper.dtd" >
+<mapper namespace="com.wiseq.cn.dao.BusinessTestDao">
+    <insert id="insert" parameterType="com.wiseq.cn.business.BusinessTest">
+        INSERT INTO yk_cs_apply (id,username,startTime,endTime,reason)
+        VALUES(#{id},#{userName},#{startTime},#{endTime},#{reason})
+    </insert>
+
+    <update id="update" parameterType="com.wiseq.cn.business.BusinessTest">
+        UPDATE yk_cs_apply SET status=#{status} WHERE id=#{id}
+    </update>
+
+    <select id="find" resultType="com.wiseq.cn.business.BusinessTest">
+        SELECT * FROM yk_cs_apply WHERE id=#{id}
+    </select>
+</mapper>

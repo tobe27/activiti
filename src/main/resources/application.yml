@@ -1,0 +1,36 @@
+server:
+  port: 8888
+
+#整合Activit
+spring:
+  activiti:
+    check-process-definitions: false
+    db-identity-used: false
+
+  activityFontName: 宋体
+  labelFontName: 宋体
+  annotationFontName: 宋体
+
+  datasource:
+    url: jdbc:mysql://192.168.2.51:8075/activiti?characterEncoding=utf-8&zeroDateTimeBehavior=convertToNull&autoReconnect=true
+    username: root
+    password: traits1023
+    driver-class-name: com.mysql.jdbc.Driver
+    type: com.mchange.v2.c3p0.ComboPooledDataSource
+
+#c3p0配置
+c3p0:
+  driverClass: ${spring.datasource.driver-class-name}
+  url: ${spring.datasource.url}
+  user: ${spring.datasource.username}
+  password: ${spring.datasource.password}
+  maxPoolSize: 30
+  minPoolSize: 10
+  autoCommitOnClose: false
+  checkoutTimeout: 1000
+  acquireIncrement: 2
+  testConnectionOnCheckin: false
+  testConnectionOnCheckout: true
+  initialPoolSize: 10
+  maxIdleTime: 300
+  idleConnectionTestPeriod: 60

@@ -1,0 +1,30 @@
+<!DOCTYPE html>                                                                                                  
+<html lang="en">                                                                                                 
+<head>                                                                                                           
+    <meta charset="UTF-8">                                                                                       
+    <title>Title</title>	
+	<style>
+        table,table tr th, table tr td { border:1px solid #0094ff; }
+        table { min-height: 30px; line-height: 30px; border-collapse: collapse; padding:2px; width:50%;}
+    </style>
+	<script src="jquery-1.8.3.js" type="text/javascript"></script>
+	<script type="text/javascript">
+		$(function(){
+            //获取Location对象的search属性值
+            var searchStr = location.search;
+            //由于searchStr属性值包括“?”，所以除去该字符
+            searchStr = searchStr.substr(1);
+            //将searchStr字符串分割成数组，数组中的每一个元素为一个参数和参数值
+            var searchs = searchStr.split("&");
+            //获得第一个参数和值
+            var values1 = searchs[1].split("=");
+            $.get("../flow/flowTrace",{executionId:values1[1]},function(result){
+                $('#myImg').attr("src", result.data);
+			});
+		});
+	</script>
+</head>                                                                                                          
+<body>
+	<img id="myImg">
+</body>
+</html>                                                                                                          
